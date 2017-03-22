@@ -1,7 +1,7 @@
 # Личный проект «Кекстаграм» [![Build status][travis-image]][travis-url]
 
 * Студент: [Вячеслав Величко](https://up.htmlacademy.ru/javascript/9/user/143220).
-* Наставник: `Неизвестно`.
+* Наставник: [Дмитрий Харин](https://up.htmlacademy.ru/javascript/9/user/84972).
 
 ---
 
