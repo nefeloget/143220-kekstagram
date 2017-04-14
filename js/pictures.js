@@ -20,7 +20,10 @@ var commentsList = [
 ];
 
 // Получение случайного значения из диапазона
-var getRandomValue = function (minValue, maxValue) {
+var getRandomValue = function (maxValue, minValue) {
+  if (!minValue) {
+    minValue = 0;
+  }
   return Math.round(Math.random() * (maxValue - minValue) + minValue);
 };
 
@@ -29,35 +32,47 @@ var Picture = function (idUser) {
   // Адрес картинки
   this.url = 'photos/' + idUser + '.jpg';
   // Количество лайков, поставленных фотографии
-  this.likes = getRandomValue(MIN_LIKES, MAX_LIKES);
+  this.likes = getRandomValue(MAX_LIKES, MIN_LIKES);
   // Количество комментариев
-  this.commentsCount = getRandomValue(MIN_COMMENTS, MAX_COMMENTS);
+  this.commentsCount = getRandomValue(MAX_COMMENTS, MIN_COMMENTS);
   // Список комментариев, оставленных другими пользователями к этой фотографии.
   this.comments = [];
 
   // Метод добавления случайных комментариев из списка
-  this.addComments = function (commentsArray) {
-    for (var i = 0; i < this.commentsCount; i++) {
-      this.comments.push(commentsArray[Math.floor(Math.random() * (commentsArray.length - 1))]);
+  this.addComments = function () {
+    var commentValue;
+    for (var i = 1; i <= this.commentsCount; i++) {
+      commentValue = commentsList[getRandomValue(commentsList.length - 1)];
+      if (!findValue(this.comments, commentValue)) {
+        this.comments.push(commentValue);
+      }
     }
   };
 
-  // Метод добавления данных в массив
-  this.addInArray = function (picturesArray) {
-    picturesArray.push(this);
-  };
 };
 
 // Создаем экземпляр картинки
-var getPictures = function (idUser, commentsArray, picturesArray) {
+var getPictures = function (idUser) {
   var pictureEl = new Picture(idUser);
-  pictureEl.addComments(commentsArray);
-  pictureEl.addInArray(picturesArray);
+  pictureEl.addComments();
+  pictures.push(pictureEl);
+};
+
+// Проверка на cуществование значения в массиве
+var findValue = function (array, value) {
+  if (array.length > 0) {
+    for (var i = 0, length = array.length; i < length; i++) {
+      if (array[i] === value) {
+        return true;
+      }
+    }
+  }
+  return false;
 };
 
 // Создаем массив с фотографиями и заполняем его случайными данными
 for (var i = 1; i <= picturesCount; i++) {
-  getPictures(i, commentsList, pictures);
+  getPictures(i);
 }
 
 // ----------------------------------------------------
