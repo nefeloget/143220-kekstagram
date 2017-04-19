@@ -1,10 +1,12 @@
 'use strict';
 
 // Константы
-var MIN_LIKES = 15;   // Минимальное кол-во лайков
-var MAX_LIKES = 200;  // Максимальное кол-во лайков
-var MIN_COMMENTS = 1; // Минимальное кол-во комментариев
-var MAX_COMMENTS = 2; // Максимальное кол-во комментариев
+var MIN_LIKES = 15;     // Минимальное кол-во лайков
+var MAX_LIKES = 200;    // Максимальное кол-во лайков
+var MIN_COMMENTS = 1;   // Минимальное кол-во комментариев
+var MAX_COMMENTS = 2;   // Максимальное кол-во комментариев
+var KEY_CODE_ENTER = 13;// Числовой код клавиши ENTER
+var KEY_CODE_ESC = 27;  // Числовой код клавиши ESC
 
 var picturesCount = 25; // Кол-во фотографий
 var pictures = [];      // Массив фотографий
@@ -95,6 +97,13 @@ var pictureContent = function (container, element) {
 var addPicturesContent = function (element, template) {
   var pictureEl = template.cloneNode(true);
   pictureContent(pictureEl, element);
+
+  // Добавляем событие для открытия галереи
+  pictureEl.querySelector('.picture').addEventListener('click', function (evt) {
+    evt.preventDefault();
+    openGallery(element);
+  });
+
   return pictureEl;
 };
 
@@ -112,6 +121,12 @@ addPicturesOnPage(pictures, pictureTemplate, pictureContainer);
 
 var uploadOverlay = document.querySelector('.upload-overlay');
 var galleryOverlay = document.querySelector('.gallery-overlay');
+var galleryOverlayClose = galleryOverlay.querySelector('.gallery-overlay-close');
+var uploadForm = document.getElementById('upload-select-image');
+var uploadCancel = uploadOverlay.querySelector('#upload-cancel');
+var uploadSubmit = uploadOverlay.querySelector('#upload-submit');
+var uploadComments = uploadOverlay.querySelector('.upload-form-description');
+var inputUploadFile = document.getElementById('upload-file');
 
 // Показать блок
 var showElement = function (block) {
@@ -123,13 +138,122 @@ var hideElement = function (block) {
   block.classList.add('invisible');
 };
 
-// Заполняем окно галереи картинкой
-var galleryOverlayContent = function (element) {
-  commentsSelector = '.comments-count';
-  likesSelector = '.likes-count';
-  pictureContent(galleryOverlay, element);
+// Добавляем событие нажатия клавиши
+var onKeyDown = function (el, handler) {
+  el.addEventListener('keydown', handler);
+};
+// Удаляем событие нажатия клавиши
+var offKeyDown = function (el, handler) {
+  el.removeEventListener('keydown', handler);
 };
 
-hideElement(uploadOverlay);
-showElement(galleryOverlay);
-galleryOverlayContent(pictures[0]);
+// Добавляем событие click
+var onClick = function (el, handler) {
+  el.addEventListener('click', handler);
+};
+// Удаляем событие click
+var offClick = function (el, handler) {
+  el.removeEventListener('click', handler);
+};
+
+// Нажатие клавиш
+function onKeyPress(keyCode, callback) {
+  return function (evt) {
+    if (evt.keyCode === keyCode) {
+      callback(evt);
+    }
+  };
+}
+
+// Сброс действия по умолчанию
+function onPrevent(callback) {
+  return function (evt) {
+    evt.preventDefault();
+    callback(evt);
+  };
+}
+
+// ----------------------------------------------------
+
+// Открытие галереи
+var openGallery = function (element) {
+
+  // Заполняем окно галереи картинкой
+  var galleryOverlayContent = function () {
+    commentsSelector = '.comments-count';
+    likesSelector = '.likes-count';
+    pictureContent(galleryOverlay, element);
+  };
+
+  galleryOverlayContent(element);
+  // Показываем окно
+  showElement(galleryOverlay);
+  // Ставим фокус на крестик
+  galleryOverlayClose.focus();
+  // Добавляем событие для закрытия галереи по нажатию ESC
+  onKeyDown(document, galleryCloseESC);
+  // Закрываем галерею по нажатию ENTER на крестике
+  onKeyDown(galleryOverlayClose, galleryCloseENTER);
+  // Добавляем событие для закрытия галереи по крестику
+  onClick(galleryOverlayClose, galleryCloseClick);
+};
+
+// Закрытие галереи
+var closeGallery = function () {
+  // Удаляем события нажатия кнопок
+  offKeyDown(document, galleryCloseESC);
+  offKeyDown(galleryOverlay, galleryCloseENTER);
+  offClick(galleryOverlayClose, galleryCloseClick);
+  // Закрываем окно
+  hideElement(galleryOverlay);
+};
+
+var galleryCloseESC = onKeyPress(KEY_CODE_ESC, closeGallery);
+var galleryCloseENTER = onKeyPress(KEY_CODE_ENTER, closeGallery);
+var galleryCloseClick = onPrevent(closeGallery);
+
+// ----------------------------------------------------
+
+// Открытие окна добавления и редактирования фото
+var openUpload = function () {
+  // Скрываем форму загрузки фото
+  hideElement(uploadForm);
+  // Показываем окно добавления и редактирования фото
+  showElement(uploadOverlay);
+
+  // Добавляем событие для закрытия окна по нажатию ESC
+  onKeyDown(document, uploadCloseESC);
+  // Закрываем окно по нажатию ENTER на крестике
+  onKeyDown(uploadCancel, uploadCloseENTER);
+  // Пока идет ввод в коментариях, форму не закрыть
+  onKeyDown(uploadComments, uploadCommentsCloseESC);
+  // Добавляем событие для закрытия окна по крестику
+  onClick(uploadCancel, uploadCloseClick);
+  // Добавляем событие для закрытия окна по кнопке Отправить
+  onClick(uploadSubmit, uploadCloseClick);
+};
+
+// Закрытие окна добавления фото
+var closeUpload = function () {
+  // Удаляем события нажатия кнопок
+  offKeyDown(document, uploadCloseESC);
+  offKeyDown(uploadOverlay, uploadCloseENTER);
+  offKeyDown(uploadComments, uploadCommentsCloseESC);
+  offClick(uploadCancel, uploadCloseClick);
+  offClick(uploadSubmit, uploadCloseClick);
+  // Закрываем окно
+  hideElement(uploadOverlay);
+  showElement(uploadForm);
+};
+
+var uploadCloseESC = onKeyPress(KEY_CODE_ESC, closeUpload);
+var uploadCloseENTER = onKeyPress(KEY_CODE_ENTER, closeUpload);
+var uploadCommentsCloseESC = onKeyPress(KEY_CODE_ESC, function (evt) {
+  evt.stopPropagation();
+});
+var uploadCloseClick = onPrevent(closeUpload);
+
+// ----------------------------------------------------
+
+// Когда фотка загружена открываем окно редактирования фото
+inputUploadFile.addEventListener('change', openUpload);
