@@ -41,9 +41,11 @@
     this.commentsCount = getRandomValue(MAX_COMMENTS, MIN_COMMENTS);
     // Список комментариев, оставленных другими пользователями к этой фотографии.
     this.comments = [];
+  };
 
+  Picture.prototype = {
     // Метод добавления случайных комментариев из списка
-    this.addComments = function () {
+    addComments: function () {
       var commentValue;
       for (var i = 1; i <= this.commentsCount; i++) {
         commentValue = commentsList[getRandomValue(commentsList.length - 1)];
@@ -51,8 +53,7 @@
           this.comments.push(commentValue);
         }
       }
-    };
-
+    }
   };
 
   // Создаем экземпляр картинки
