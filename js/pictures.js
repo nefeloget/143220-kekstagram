@@ -127,7 +127,7 @@
   var galleryOverlayClose = galleryOverlay.querySelector('.gallery-overlay-close');
   var uploadForm = document.getElementById('upload-select-image');
   var uploadCancel = uploadOverlay.querySelector('#upload-cancel');
-  // var uploadSubmit = uploadOverlay.querySelector('#upload-submit');
+  var uploadOverlayForm = uploadOverlay.querySelector('#upload-filter');
   var uploadComment = uploadOverlay.querySelector('.upload-form-description');
   var inputUploadFile = document.getElementById('upload-file');
 
@@ -157,6 +157,15 @@
   // Удаляем событие click
   var offClick = function (el, handler) {
     el.removeEventListener('click', handler);
+  };
+
+  // Добавляем событие Submit
+  var onSubmit = function (el, handler) {
+    el.addEventListener('submit', handler);
+  };
+  // Удаляем событие Submit
+  var offSubmit = function (el, handler) {
+    el.removeEventListener('submit', handler);
   };
 
   // Добавляем событие невалидного поля
@@ -190,6 +199,11 @@
     evt.preventDefault();
     evt.target.style.border = '1px solid red';
     evt.target.style.outline = '0';
+  };
+
+  // Сброс внешнего вида невалидного поля
+  var clearInvalidField = function (el) {
+    el.setAttribute('style', '');
   };
 
   // ----------------------------------------------------
@@ -247,6 +261,8 @@
   var uploadScaleMinus = uploadOverlay.querySelector('.upload-resize-controls-button-dec');
   // Кнопка изменения размера картинки в большую сторону
   var uploadScalePlus = uploadOverlay.querySelector('.upload-resize-controls-button-inc');
+  // Поле с переключателями фильтров
+  var uploadFilterControls = uploadOverlay.querySelector('.upload-filter-controls');
 
 
   // Обработчик клика на кнопку изменения размера картинки в меньшую сторону
@@ -279,8 +295,18 @@
 
   // Устанавливаем значения по умолчанию
   var setDefaultUpload = function (defaultValue) {
+    uploadOverlayForm.reset();
     setScale(defaultValue);
     uploadScaleControl.setAttribute('value', defaultValue + '%');
+    uploadComment.value = '';
+    clearInvalidField(uploadComment);
+    uploadImagePreview.className = 'filter-image-preview';
+  };
+
+  var setFilter = function (evt) {
+    if (evt.target.checked) {
+      uploadImagePreview.className = 'filter-image-preview filter-' + evt.target.value;
+    }
   };
 
   // Открытие окна добавления и редактирования фото
@@ -297,14 +323,16 @@
     // Пока идет ввод в коментариях, форму не закрыть
     onKeyDown(uploadComment, uploadCommentCloseESC);
     // Добавляем событие для закрытия окна по крестику
-    onClick(uploadCancel, uploadCloseClick);
-    // Добавляем событие для закрытия окна по кнопке Отправить
-    // onClick(uploadSubmit, uploadCloseClick);
+    onClick(uploadCancel, uploadCloseWindow);
+    // Добавляем событие для отправки формы
+    onSubmit(uploadOverlayForm, uploadCloseWindow);
     // Добавляем событие валидации поля комментирования
     onInvalid(uploadComment, addInvalidField);
     // Добавляем события для кнопок изменения масштаба
     onClick(uploadScaleMinus, onUploadScaleMinus);
     onClick(uploadScalePlus, onUploadScalePlus);
+    // Переключаем фильтры
+    onClick(uploadFilterControls, setFilter);
   };
 
   // Закрытие окна добавления фото
@@ -313,13 +341,15 @@
     offKeyDown(document, uploadCloseESC);
     offKeyDown(uploadOverlay, uploadCloseENTER);
     offKeyDown(uploadComment, uploadCommentCloseESC);
-    offClick(uploadCancel, uploadCloseClick);
-    // offClick(uploadSubmit, uploadCloseClick);
+    offClick(uploadCancel, uploadCloseWindow);
+    offSubmit(uploadOverlayForm, uploadCloseWindow);
     offInvalid(uploadComment, addInvalidField);
     offClick(uploadScaleMinus, onUploadScaleMinus);
     offClick(uploadScalePlus, onUploadScalePlus);
     // Закрываем окно
     hideElement(uploadOverlay);
+    // Сбрасываем форму загрузки и показываем её
+    uploadForm.reset();
     showElement(uploadForm);
 
     // Устанавливаем значения по умолчанию
@@ -331,7 +361,7 @@
   var uploadCommentCloseESC = onKeyPress(KEY_CODE_ESC, function (evt) {
     evt.stopPropagation();
   });
-  var uploadCloseClick = onPrevent(closeUpload);
+  var uploadCloseWindow = onPrevent(closeUpload);
 
   // ----------------------------------------------------
 
