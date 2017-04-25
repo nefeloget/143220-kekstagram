@@ -1,6 +1,11 @@
 'use strict';
 
-(function () {
+window.form = (function () {
+  // Константы для логики изменения размера изображения
+  var SCALE_MIN = 25;           // Минимальный масштаб (%)
+  var SCALE_MAX = 100;          // Макcимальный масштаб (%)
+  var SCALE_STEP = 25;          // Шаг (%)
+  var SCALE_DEFAULT_VALUE = 100;// Значение по умолчанию (%)
 
   var uploadOverlay = document.querySelector('.upload-overlay');
   var uploadForm = document.getElementById('upload-select-image');
@@ -9,15 +14,6 @@
   var uploadOverlayForm = uploadOverlay.querySelector('#upload-filter');
   var uploadComment = uploadOverlay.querySelector('.upload-form-description');
   var inputUploadFile = document.getElementById('upload-file');
-
-  // ----------------------------------------------------
-
-  // Константы для логики изменения размера изображения
-  var SCALE_MIN = 25;           // Минимальный масштаб (%)
-  var SCALE_MAX = 100;          // Макcимальный масштаб (%)
-  var SCALE_STEP = 25;          // Шаг (%)
-  var SCALE_DEFAULT_VALUE = 100;// Значение по умолчанию (%)
-
   // Поле отображения масштаба
   var uploadScaleControl = uploadOverlay.querySelector('.upload-resize-controls-value');
   // Загруженная картинка в форму кадрирования (просмотр)
@@ -146,4 +142,5 @@
   // Когда фотка загружена открываем окно редактирования фото
   inputUploadFile.addEventListener('change', openUpload);
 
-}());
+
+})();
