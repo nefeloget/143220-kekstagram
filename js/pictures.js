@@ -1,94 +1,14 @@
 'use strict';
 
 (function () {
-  var pictureTemplate = document.querySelector('#picture-template').content;
-  var pictureContainer = document.querySelector('.pictures');
-  var imageSelector = 'img';
-  var commentsSelector = '.picture-comments';
-  var likesSelector = '.picture-likes';
-  var fragment = document.createDocumentFragment();
-
-  // Добавляем данные для картинки в контейнер
-  var pictureContent = function (container, element) {
-    container.querySelector(imageSelector).setAttribute('src', element.url);
-    container.querySelector(commentsSelector).textContent = element.commentsCount;
-    container.querySelector(likesSelector).textContent = element.likes;
-  };
-
-  // Создаем картинки по шаблону
-  var addPicturesContent = function (element, template) {
-    var pictureEl = template.cloneNode(true);
-    pictureContent(pictureEl, element);
-
-    // Добавляем событие для открытия галереи
-    pictureEl.querySelector('.picture').addEventListener('click', function (evt) {
-      evt.preventDefault();
-      openGallery(element);
-    });
-
-    return pictureEl;
-  };
-
-  // Помещаем картинки на страницу
-  var addPicturesOnPage = function (picturesArray, template, container) {
-    picturesArray.forEach(function (item) {
-      fragment.appendChild(addPicturesContent(item, template));
-    });
-    container.appendChild(fragment);
-  };
-
-  addPicturesOnPage(window.data, pictureTemplate, pictureContainer);
-
-  // ----------------------------------------------------
 
   var uploadOverlay = document.querySelector('.upload-overlay');
-  var galleryOverlay = document.querySelector('.gallery-overlay');
-  var galleryOverlayClose = galleryOverlay.querySelector('.gallery-overlay-close');
   var uploadForm = document.getElementById('upload-select-image');
   var uploadCancel = uploadOverlay.querySelector('#upload-cancel');
   var uploadSubmit = uploadOverlay.querySelector('#upload-submit');
   var uploadOverlayForm = uploadOverlay.querySelector('#upload-filter');
   var uploadComment = uploadOverlay.querySelector('.upload-form-description');
   var inputUploadFile = document.getElementById('upload-file');
-
-  // ----------------------------------------------------
-
-  // Открытие галереи
-  var openGallery = function (element) {
-
-    // Заполняем окно галереи картинкой
-    var galleryOverlayContent = function () {
-      commentsSelector = '.comments-count';
-      likesSelector = '.likes-count';
-      pictureContent(galleryOverlay, element);
-    };
-
-    galleryOverlayContent(element);
-    // Показываем окно
-    window.util.showElement(galleryOverlay);
-    // Ставим фокус на крестик
-    galleryOverlayClose.focus();
-    // Добавляем событие для закрытия галереи по нажатию ESC
-    window.util.onKeyDown(document, galleryCloseESC);
-    // Закрываем галерею по нажатию ENTER на крестике
-    window.util.onKeyDown(galleryOverlayClose, galleryCloseENTER);
-    // Добавляем событие для закрытия галереи по крестику
-    window.util.onClick(galleryOverlayClose, galleryCloseClick);
-  };
-
-  // Закрытие галереи
-  var closeGallery = function () {
-    // Удаляем события нажатия кнопок
-    window.util.offKeyDown(document, galleryCloseESC);
-    window.util.offKeyDown(galleryOverlay, galleryCloseENTER);
-    window.util.offClick(galleryOverlayClose, galleryCloseClick);
-    // Закрываем окно
-    window.util.hideElement(galleryOverlay);
-  };
-
-  var galleryCloseESC = window.util.onKeyPress(window.util.KEY_CODE_ESC, closeGallery);
-  var galleryCloseENTER = window.util.onKeyPress(window.util.KEY_CODE_ENTER, closeGallery);
-  var galleryCloseClick = window.util.onPrevent(closeGallery);
 
   // ----------------------------------------------------
 

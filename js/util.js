@@ -36,13 +36,13 @@ window.util = (function () {
   };
 
   // Нажатие клавиш
-  function onKeyPress(keyCode, callback) {
+  var onKeyPress = function (keyCode, callback) {
     return function (evt) {
       if (evt.keyCode === keyCode) {
         callback(evt);
       }
-    };
-  }
+    }
+  };
 
   var addFormInvalid = function (form) {
     form.classList.add('form-invalid');
@@ -53,12 +53,12 @@ window.util = (function () {
   };
 
   // Сброс действия по умолчанию
-  function onPrevent(callback) {
+  var onPrevent = function (callback) {
     return function (evt) {
       evt.preventDefault();
       callback(evt);
-    };
-  }
+    }
+  };
 
   // Сброс внешнего вида блока
   var clearStyleField = function (el) {
