@@ -41,9 +41,11 @@
     this.commentsCount = getRandomValue(MAX_COMMENTS, MIN_COMMENTS);
     // Список комментариев, оставленных другими пользователями к этой фотографии.
     this.comments = [];
+  };
 
+  Picture.prototype = {
     // Метод добавления случайных комментариев из списка
-    this.addComments = function () {
+    addComments: function () {
       var commentValue;
       for (var i = 1; i <= this.commentsCount; i++) {
         commentValue = commentsList[getRandomValue(commentsList.length - 1)];
@@ -51,8 +53,7 @@
           this.comments.push(commentValue);
         }
       }
-    };
-
+    }
   };
 
   // Создаем экземпляр картинки
@@ -127,7 +128,8 @@
   var uploadForm = document.getElementById('upload-select-image');
   var uploadCancel = uploadOverlay.querySelector('#upload-cancel');
   var uploadSubmit = uploadOverlay.querySelector('#upload-submit');
-  var uploadComments = uploadOverlay.querySelector('.upload-form-description');
+  var uploadOverlayForm = uploadOverlay.querySelector('#upload-filter');
+  var uploadComment = uploadOverlay.querySelector('.upload-form-description');
   var inputUploadFile = document.getElementById('upload-file');
 
   // Показать блок
@@ -158,6 +160,15 @@
     el.removeEventListener('click', handler);
   };
 
+  // Добавляем событие Submit
+  var onSubmit = function (el, handler) {
+    el.addEventListener('submit', handler);
+  };
+  // Удаляем событие Submit
+  var offSubmit = function (el, handler) {
+    el.removeEventListener('submit', handler);
+  };
+
   // Нажатие клавиш
   function onKeyPress(keyCode, callback) {
     return function (evt) {
@@ -174,6 +185,11 @@
       callback(evt);
     };
   }
+
+  // Сброс внешнего вида блока
+  var clearStyleField = function (el) {
+    el.setAttribute('style', '');
+  };
 
   // ----------------------------------------------------
 
@@ -216,6 +232,88 @@
 
   // ----------------------------------------------------
 
+  // Константы для логики изменения размера изображения
+  var SCALE_MIN = 25;           // Минимальный масштаб (%)
+  var SCALE_MAX = 100;          // Макcимальный масштаб (%)
+  var SCALE_STEP = 25;          // Шаг (%)
+  var SCALE_DEFAULT_VALUE = 100;// Значение по умолчанию (%)
+
+  // Поле отображения масштаба
+  var uploadScaleControl = uploadOverlay.querySelector('.upload-resize-controls-value');
+  // Загруженная картинка в форму кадрирования (просмотр)
+  var uploadImagePreview = uploadOverlay.querySelector('.filter-image-preview');
+  // Кнопка изменения размера картинки в меньшую сторону
+  var uploadScaleMinus = uploadOverlay.querySelector('.upload-resize-controls-button-dec');
+  // Кнопка изменения размера картинки в большую сторону
+  var uploadScalePlus = uploadOverlay.querySelector('.upload-resize-controls-button-inc');
+  // Поле с переключателями фильтров
+  var uploadFilterControls = uploadOverlay.querySelector('.upload-filter-controls');
+
+
+  // Обработчик клика на кнопку изменения размера картинки в меньшую сторону
+  function onUploadScaleMinus() {
+    setScale(getValueScale('minus'));
+  }
+
+  // Обработчик клика на кнопку изменения размера картинки в большую сторону
+  function onUploadScalePlus() {
+    setScale(getValueScale('plus'));
+  }
+
+  // Вычисление размера изображения в форме кадрирования
+  function getValueScale(flag) {
+    var size = parseInt(uploadScaleControl.value, 10);
+
+    if (SCALE_MIN < size && flag === 'minus') {
+      size -= SCALE_STEP;
+    } else if (SCALE_MAX > size && flag === 'plus') {
+      size += SCALE_STEP;
+    }
+
+    return size;
+  }
+
+  function setScale(size) {
+    uploadScaleControl.setAttribute('value', size + '%');
+    uploadImagePreview.style.transform = 'scale(' + size / 100 + ')';
+  }
+
+  // Устанавливаем значения по умолчанию
+  var setDefaultUpload = function (defaultValue) {
+    uploadOverlayForm.reset();
+    // Сброс масштаба
+    uploadScaleControl.value = defaultValue + '%';
+    clearStyleField(uploadScaleControl);
+    // Сброс поля комментария
+    uploadComment.value = '';
+    clearStyleField(uploadComment);
+    // Сброс фильтров
+    uploadImagePreview.className = 'filter-image-preview';
+  };
+
+  var setFilter = function (evt) {
+    if (evt.target.checked) {
+      uploadImagePreview.className = 'filter-image-preview filter-' + evt.target.value;
+    }
+  };
+
+  var addFormInvalid = function (form) {
+    form.classList.add('form-invalid');
+  };
+
+  var removeFormInvalid = function (form) {
+    form.classList.remove('form-invalid');
+  };
+
+  var onUploadSubmit = function () {
+    if (uploadOverlayForm.checkValidity() === false) {
+      addFormInvalid(uploadOverlayForm);
+    } else {
+      removeFormInvalid(uploadOverlayForm);
+      closeUpload();
+    }
+  };
+
   // Открытие окна добавления и редактирования фото
   var openUpload = function () {
     // Скрываем форму загрузки фото
@@ -228,35 +326,52 @@
     // Закрываем окно по нажатию ENTER на крестике
     onKeyDown(uploadCancel, uploadCloseENTER);
     // Пока идет ввод в коментариях, форму не закрыть
-    onKeyDown(uploadComments, uploadCommentsCloseESC);
+    onKeyDown(uploadComment, uploadCommentCloseESC);
     // Добавляем событие для закрытия окна по крестику
-    onClick(uploadCancel, uploadCloseClick);
-    // Добавляем событие для закрытия окна по кнопке Отправить
-    onClick(uploadSubmit, uploadCloseClick);
+    onClick(uploadCancel, uploadCloseWindow);
+    // Добавляем событие для отправки формы
+    onSubmit(uploadOverlayForm, uploadCloseWindow);
+    onClick(uploadSubmit, uploadCloseSubmit);
+    // Добавляем события для кнопок изменения масштаба
+    onClick(uploadScaleMinus, onUploadScaleMinus);
+    onClick(uploadScalePlus, onUploadScalePlus);
+    // Переключаем фильтры
+    onClick(uploadFilterControls, setFilter);
   };
 
   // Закрытие окна добавления фото
   var closeUpload = function () {
-    // Удаляем события нажатия кнопок
+    // Удаляем события
     offKeyDown(document, uploadCloseESC);
     offKeyDown(uploadOverlay, uploadCloseENTER);
-    offKeyDown(uploadComments, uploadCommentsCloseESC);
-    offClick(uploadCancel, uploadCloseClick);
-    offClick(uploadSubmit, uploadCloseClick);
+    offKeyDown(uploadComment, uploadCommentCloseESC);
+    offClick(uploadCancel, uploadCloseWindow);
+    offSubmit(uploadOverlayForm, uploadCloseWindow);
+    offClick(uploadSubmit, uploadCloseSubmit);
+    offClick(uploadScaleMinus, onUploadScaleMinus);
+    offClick(uploadScalePlus, onUploadScalePlus);
+    offClick(uploadFilterControls, setFilter);
     // Закрываем окно
     hideElement(uploadOverlay);
+    // Сбрасываем форму загрузки и показываем её
+    uploadForm.reset();
     showElement(uploadForm);
+
+    // Устанавливаем значения по умолчанию
+    setDefaultUpload(SCALE_DEFAULT_VALUE);
   };
 
   var uploadCloseESC = onKeyPress(KEY_CODE_ESC, closeUpload);
   var uploadCloseENTER = onKeyPress(KEY_CODE_ENTER, closeUpload);
-  var uploadCommentsCloseESC = onKeyPress(KEY_CODE_ESC, function (evt) {
+  var uploadCommentCloseESC = onKeyPress(KEY_CODE_ESC, function (evt) {
     evt.stopPropagation();
   });
-  var uploadCloseClick = onPrevent(closeUpload);
+  var uploadCloseWindow = onPrevent(closeUpload);
+  var uploadCloseSubmit = onPrevent(onUploadSubmit);
 
   // ----------------------------------------------------
 
   // Когда фотка загружена открываем окно редактирования фото
   inputUploadFile.addEventListener('change', openUpload);
+
 }());
