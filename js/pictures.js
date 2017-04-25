@@ -1,33 +1,6 @@
 'use strict';
 
 (function () {
-
-  // Константы
-  var KEY_CODE_ENTER = 13;// Числовой код клавиши ENTER
-  var KEY_CODE_ESC = 27;  // Числовой код клавиши ESC
-
-  // Получение случайного значения из диапазона
-  var getRandomValue = function (maxValue, minValue) {
-    if (!minValue) {
-      minValue = 0;
-    }
-    return Math.round(Math.random() * (maxValue - minValue) + minValue);
-  };
-
-  // Проверка на cуществование значения в массиве
-  var findValue = function (array, value) {
-    if (array.length > 0) {
-      for (var i = 0, length = array.length; i < length; i++) {
-        if (array[i] === value) {
-          return true;
-        }
-      }
-    }
-    return false;
-  };
-
-  // ----------------------------------------------------
-
   var pictureTemplate = document.querySelector('#picture-template').content;
   var pictureContainer = document.querySelector('.pictures');
   var imageSelector = 'img';
@@ -78,65 +51,6 @@
   var uploadComment = uploadOverlay.querySelector('.upload-form-description');
   var inputUploadFile = document.getElementById('upload-file');
 
-  // Показать блок
-  var showElement = function (block) {
-    block.classList.remove('invisible');
-  };
-
-  // Скрыть блок
-  var hideElement = function (block) {
-    block.classList.add('invisible');
-  };
-
-  // Добавляем событие нажатия клавиши
-  var onKeyDown = function (el, handler) {
-    el.addEventListener('keydown', handler);
-  };
-  // Удаляем событие нажатия клавиши
-  var offKeyDown = function (el, handler) {
-    el.removeEventListener('keydown', handler);
-  };
-
-  // Добавляем событие click
-  var onClick = function (el, handler) {
-    el.addEventListener('click', handler);
-  };
-  // Удаляем событие click
-  var offClick = function (el, handler) {
-    el.removeEventListener('click', handler);
-  };
-
-  // Добавляем событие Submit
-  var onSubmit = function (el, handler) {
-    el.addEventListener('submit', handler);
-  };
-  // Удаляем событие Submit
-  var offSubmit = function (el, handler) {
-    el.removeEventListener('submit', handler);
-  };
-
-  // Нажатие клавиш
-  function onKeyPress(keyCode, callback) {
-    return function (evt) {
-      if (evt.keyCode === keyCode) {
-        callback(evt);
-      }
-    };
-  }
-
-  // Сброс действия по умолчанию
-  function onPrevent(callback) {
-    return function (evt) {
-      evt.preventDefault();
-      callback(evt);
-    };
-  }
-
-  // Сброс внешнего вида блока
-  var clearStyleField = function (el) {
-    el.setAttribute('style', '');
-  };
-
   // ----------------------------------------------------
 
   // Открытие галереи
@@ -151,30 +65,30 @@
 
     galleryOverlayContent(element);
     // Показываем окно
-    showElement(galleryOverlay);
+    window.util.showElement(galleryOverlay);
     // Ставим фокус на крестик
     galleryOverlayClose.focus();
     // Добавляем событие для закрытия галереи по нажатию ESC
-    onKeyDown(document, galleryCloseESC);
+    window.util.onKeyDown(document, galleryCloseESC);
     // Закрываем галерею по нажатию ENTER на крестике
-    onKeyDown(galleryOverlayClose, galleryCloseENTER);
+    window.util.onKeyDown(galleryOverlayClose, galleryCloseENTER);
     // Добавляем событие для закрытия галереи по крестику
-    onClick(galleryOverlayClose, galleryCloseClick);
+    window.util.onClick(galleryOverlayClose, galleryCloseClick);
   };
 
   // Закрытие галереи
   var closeGallery = function () {
     // Удаляем события нажатия кнопок
-    offKeyDown(document, galleryCloseESC);
-    offKeyDown(galleryOverlay, galleryCloseENTER);
-    offClick(galleryOverlayClose, galleryCloseClick);
+    window.util.offKeyDown(document, galleryCloseESC);
+    window.util.offKeyDown(galleryOverlay, galleryCloseENTER);
+    window.util.offClick(galleryOverlayClose, galleryCloseClick);
     // Закрываем окно
-    hideElement(galleryOverlay);
+    window.util.hideElement(galleryOverlay);
   };
 
-  var galleryCloseESC = onKeyPress(KEY_CODE_ESC, closeGallery);
-  var galleryCloseENTER = onKeyPress(KEY_CODE_ENTER, closeGallery);
-  var galleryCloseClick = onPrevent(closeGallery);
+  var galleryCloseESC = window.util.onKeyPress(window.util.KEY_CODE_ESC, closeGallery);
+  var galleryCloseENTER = window.util.onKeyPress(window.util.KEY_CODE_ENTER, closeGallery);
+  var galleryCloseClick = window.util.onPrevent(closeGallery);
 
   // ----------------------------------------------------
 
@@ -229,10 +143,10 @@
     uploadOverlayForm.reset();
     // Сброс масштаба
     uploadScaleControl.value = defaultValue + '%';
-    clearStyleField(uploadScaleControl);
+    window.util.clearStyleField(uploadScaleControl);
     // Сброс поля комментария
     uploadComment.value = '';
-    clearStyleField(uploadComment);
+    window.util.clearStyleField(uploadComment);
     // Сброс фильтров
     uploadImagePreview.className = 'filter-image-preview';
   };
@@ -243,19 +157,10 @@
     }
   };
 
-  var addFormInvalid = function (form) {
-    form.classList.add('form-invalid');
-  };
-
-  var removeFormInvalid = function (form) {
-    form.classList.remove('form-invalid');
-  };
-
   var onUploadSubmit = function () {
     if (uploadOverlayForm.checkValidity() === false) {
-      addFormInvalid(uploadOverlayForm);
+      window.util.addFormInvalid(uploadOverlayForm);
     } else {
-      removeFormInvalid(uploadOverlayForm);
       closeUpload();
     }
   };
@@ -263,57 +168,58 @@
   // Открытие окна добавления и редактирования фото
   var openUpload = function () {
     // Скрываем форму загрузки фото
-    hideElement(uploadForm);
+    window.util.hideElement(uploadForm);
     // Показываем окно добавления и редактирования фото
-    showElement(uploadOverlay);
+    window.util.showElement(uploadOverlay);
 
     // Добавляем событие для закрытия окна по нажатию ESC
-    onKeyDown(document, uploadCloseESC);
+    window.util.onKeyDown(document, uploadCloseESC);
     // Закрываем окно по нажатию ENTER на крестике
-    onKeyDown(uploadCancel, uploadCloseENTER);
+    window.util.onKeyDown(uploadCancel, uploadCloseENTER);
     // Пока идет ввод в коментариях, форму не закрыть
-    onKeyDown(uploadComment, uploadCommentCloseESC);
+    window.util.onKeyDown(uploadComment, uploadCommentCloseESC);
     // Добавляем событие для закрытия окна по крестику
-    onClick(uploadCancel, uploadCloseWindow);
+    window.util.onClick(uploadCancel, uploadCloseWindow);
     // Добавляем событие для отправки формы
-    onSubmit(uploadOverlayForm, uploadCloseWindow);
-    onClick(uploadSubmit, uploadCloseSubmit);
+    window.util.onSubmit(uploadOverlayForm, uploadCloseWindow);
+    window.util.onClick(uploadSubmit, uploadCloseSubmit);
     // Добавляем события для кнопок изменения масштаба
-    onClick(uploadScaleMinus, onUploadScaleMinus);
-    onClick(uploadScalePlus, onUploadScalePlus);
+    window.util.onClick(uploadScaleMinus, onUploadScaleMinus);
+    window.util.onClick(uploadScalePlus, onUploadScalePlus);
     // Переключаем фильтры
-    onClick(uploadFilterControls, setFilter);
+    window.util.onClick(uploadFilterControls, setFilter);
   };
 
   // Закрытие окна добавления фото
   var closeUpload = function () {
     // Удаляем события
-    offKeyDown(document, uploadCloseESC);
-    offKeyDown(uploadOverlay, uploadCloseENTER);
-    offKeyDown(uploadComment, uploadCommentCloseESC);
-    offClick(uploadCancel, uploadCloseWindow);
-    offSubmit(uploadOverlayForm, uploadCloseWindow);
-    offClick(uploadSubmit, uploadCloseSubmit);
-    offClick(uploadScaleMinus, onUploadScaleMinus);
-    offClick(uploadScalePlus, onUploadScalePlus);
-    offClick(uploadFilterControls, setFilter);
+    window.util.offKeyDown(document, uploadCloseESC);
+    window.util.offKeyDown(uploadOverlay, uploadCloseENTER);
+    window.util.offKeyDown(uploadComment, uploadCommentCloseESC);
+    window.util.offClick(uploadCancel, uploadCloseWindow);
+    window.util.offSubmit(uploadOverlayForm, uploadCloseWindow);
+    window.util.offClick(uploadSubmit, uploadCloseSubmit);
+    window.util.offClick(uploadScaleMinus, onUploadScaleMinus);
+    window.util.offClick(uploadScalePlus, onUploadScalePlus);
+    window.util.offClick(uploadFilterControls, setFilter);
     // Закрываем окно
-    hideElement(uploadOverlay);
+    window.util.hideElement(uploadOverlay);
     // Сбрасываем форму загрузки и показываем её
     uploadForm.reset();
-    showElement(uploadForm);
+    window.util.showElement(uploadForm);
 
     // Устанавливаем значения по умолчанию
     setDefaultUpload(SCALE_DEFAULT_VALUE);
+    window.util.removeFormInvalid(uploadOverlayForm);
   };
 
-  var uploadCloseESC = onKeyPress(KEY_CODE_ESC, closeUpload);
-  var uploadCloseENTER = onKeyPress(KEY_CODE_ENTER, closeUpload);
-  var uploadCommentCloseESC = onKeyPress(KEY_CODE_ESC, function (evt) {
+  var uploadCloseESC = window.util.onKeyPress(window.util.KEY_CODE_ESC, closeUpload);
+  var uploadCloseENTER = window.util.onKeyPress(window.util.KEY_CODE_ENTER, closeUpload);
+  var uploadCommentCloseESC = window.util.onKeyPress(window.util.KEY_CODE_ESC, function (evt) {
     evt.stopPropagation();
   });
-  var uploadCloseWindow = onPrevent(closeUpload);
-  var uploadCloseSubmit = onPrevent(onUploadSubmit);
+  var uploadCloseWindow = window.util.onPrevent(closeUpload);
+  var uploadCloseSubmit = window.util.onPrevent(onUploadSubmit);
 
   // ----------------------------------------------------
 

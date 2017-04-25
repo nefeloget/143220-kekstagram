@@ -6,8 +6,8 @@ window.data = (function () {
   var MAX_LIKES = 200;    // Максимальное кол-во лайков
   var MIN_COMMENTS = 1;   // Минимальное кол-во комментариев
   var MAX_COMMENTS = 2;   // Максимальное кол-во комментариев
+  var PICTURES_COUNT = 25;// Кол-во фотографий
 
-  var picturesCount = 25; // Кол-во фотографий
   var pictures = [];      // Массив фотографий
 
   // Список комментариев
@@ -25,9 +25,9 @@ window.data = (function () {
     // Адрес картинки
     this.url = 'photos/' + idUser + '.jpg';
     // Количество лайков, поставленных фотографии
-    this.likes = getRandomValue(MAX_LIKES, MIN_LIKES);
+    this.likes = window.util.getRandomValue(MAX_LIKES, MIN_LIKES);
     // Количество комментариев
-    this.commentsCount = getRandomValue(MAX_COMMENTS, MIN_COMMENTS);
+    this.commentsCount = window.util.getRandomValue(MAX_COMMENTS, MIN_COMMENTS);
     // Список комментариев, оставленных другими пользователями к этой фотографии.
     this.comments = [];
   };
@@ -37,8 +37,8 @@ window.data = (function () {
     addComments: function () {
       var commentValue;
       for (var i = 1; i <= this.commentsCount; i++) {
-        commentValue = commentsList[getRandomValue(commentsList.length - 1)];
-        if (!findValue(this.comments, commentValue)) {
+        commentValue = commentsList[window.util.getRandomValue(commentsList.length - 1)];
+        if (!window.util.findValue(this.comments, commentValue)) {
           this.comments.push(commentValue);
         }
       }
@@ -53,7 +53,7 @@ window.data = (function () {
   };
 
   // Создаем массив с фотографиями и заполняем его случайными данными
-  for (var i = 1; i <= picturesCount; i++) {
+  for (var i = 1; i <= PICTURES_COUNT; i++) {
     getPictures(i);
   }
 
