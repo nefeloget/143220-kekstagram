@@ -41,7 +41,7 @@ window.util = (function () {
       if (evt.keyCode === keyCode) {
         callback(evt);
       }
-    }
+    };
   };
 
   var addFormInvalid = function (form) {
@@ -57,7 +57,7 @@ window.util = (function () {
     return function (evt) {
       evt.preventDefault();
       callback(evt);
-    }
+    };
   };
 
   // Сброс внешнего вида блока

@@ -59,7 +59,7 @@ window.form = (function () {
     uploadOverlayForm.reset();
     // Сброс масштаба
     uploadScaleControl.value = defaultValue + '%';
-    window.util.clearStyleField(uploadScaleControl);
+    window.util.clearStyleField(uploadImagePreview);
     // Сброс поля комментария
     uploadComment.value = '';
     window.util.clearStyleField(uploadComment);
