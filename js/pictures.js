@@ -127,6 +127,7 @@
   var galleryOverlayClose = galleryOverlay.querySelector('.gallery-overlay-close');
   var uploadForm = document.getElementById('upload-select-image');
   var uploadCancel = uploadOverlay.querySelector('#upload-cancel');
+  var uploadSubmit = uploadOverlay.querySelector('#upload-submit');
   var uploadOverlayForm = uploadOverlay.querySelector('#upload-filter');
   var uploadComment = uploadOverlay.querySelector('.upload-form-description');
   var inputUploadFile = document.getElementById('upload-file');
@@ -168,15 +169,6 @@
     el.removeEventListener('submit', handler);
   };
 
-  // Добавляем событие невалидного поля
-  var onInvalid = function (el, handler) {
-    el.addEventListener('input', handler);
-  };
-  // Удаляем событие невалидного поля
-  var offInvalid = function (el, handler) {
-    el.removeEventListener('input', handler);
-  };
-
   // Нажатие клавиш
   function onKeyPress(keyCode, callback) {
     return function (evt) {
@@ -194,15 +186,8 @@
     };
   }
 
-  // Меняем внешний вид невалидного поля
-  var addInvalidField = function (evt) {
-    evt.preventDefault();
-    evt.target.style.border = '1px solid red';
-    evt.target.style.outline = '0';
-  };
-
-  // Сброс внешнего вида невалидного поля
-  var clearInvalidField = function (el) {
+  // Сброс внешнего вида блока
+  var clearStyleField = function (el) {
     el.setAttribute('style', '');
   };
 
@@ -296,16 +281,36 @@
   // Устанавливаем значения по умолчанию
   var setDefaultUpload = function (defaultValue) {
     uploadOverlayForm.reset();
-    setScale(defaultValue);
-    uploadScaleControl.setAttribute('value', defaultValue + '%');
+    // Сброс масштаба
+    uploadScaleControl.value = defaultValue + '%';
+    clearStyleField(uploadScaleControl);
+    // Сброс поля комментария
     uploadComment.value = '';
-    clearInvalidField(uploadComment);
+    clearStyleField(uploadComment);
+    // Сброс фильтров
     uploadImagePreview.className = 'filter-image-preview';
   };
 
   var setFilter = function (evt) {
     if (evt.target.checked) {
       uploadImagePreview.className = 'filter-image-preview filter-' + evt.target.value;
+    }
+  };
+
+  var addFormInvalid = function (form) {
+    form.classList.add('form-invalid');
+  };
+
+  var removeFormInvalid = function (form) {
+    form.classList.remove('form-invalid');
+  };
+
+  var onUploadSubmit = function () {
+    if (uploadOverlayForm.checkValidity() === false) {
+      addFormInvalid(uploadOverlayForm);
+    } else {
+      removeFormInvalid(uploadOverlayForm);
+      closeUpload();
     }
   };
 
@@ -326,8 +331,7 @@
     onClick(uploadCancel, uploadCloseWindow);
     // Добавляем событие для отправки формы
     onSubmit(uploadOverlayForm, uploadCloseWindow);
-    // Добавляем событие валидации поля комментирования
-    onInvalid(uploadComment, addInvalidField);
+    onClick(uploadSubmit, uploadCloseSubmit);
     // Добавляем события для кнопок изменения масштаба
     onClick(uploadScaleMinus, onUploadScaleMinus);
     onClick(uploadScalePlus, onUploadScalePlus);
@@ -343,9 +347,10 @@
     offKeyDown(uploadComment, uploadCommentCloseESC);
     offClick(uploadCancel, uploadCloseWindow);
     offSubmit(uploadOverlayForm, uploadCloseWindow);
-    offInvalid(uploadComment, addInvalidField);
+    offClick(uploadSubmit, uploadCloseSubmit);
     offClick(uploadScaleMinus, onUploadScaleMinus);
     offClick(uploadScalePlus, onUploadScalePlus);
+    offClick(uploadFilterControls, setFilter);
     // Закрываем окно
     hideElement(uploadOverlay);
     // Сбрасываем форму загрузки и показываем её
@@ -362,6 +367,7 @@
     evt.stopPropagation();
   });
   var uploadCloseWindow = onPrevent(closeUpload);
+  var uploadCloseSubmit = onPrevent(onUploadSubmit);
 
   // ----------------------------------------------------
 

@@ -809,3 +809,10 @@ input[type=radio]:checked + .upload-filter-label .upload-filter-preview {
 .footer-social-item-vk {
   background-position: -84px 0;
 }
+
+/* Валидация полей формы */
+.form-invalid textarea:invalid,
+.form-invalid input:invalid {
+  border: 1px solid red;
+  outline: 0;
+}
