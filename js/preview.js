@@ -5,10 +5,10 @@ window.preview = (function () {
   var galleryOverlayClose = galleryOverlay.querySelector('.gallery-overlay-close');
 
   // Открытие галереи
-  var openGallery = function (element) {
+  var openGallery = function (element, callback) {
 
     // Заполняем окно галереи картинкой
-    window.gallery.pictureContent(galleryOverlay, element, '.comments-count', '.likes-count', 'img');
+    callback();
 
     // Показываем окно
     window.util.showElement(galleryOverlay);
@@ -36,8 +36,5 @@ window.preview = (function () {
   var galleryCloseENTER = window.util.onKeyPress(window.util.KEY_CODE_ENTER, closeGallery);
   var galleryCloseClick = window.util.onPrevent(closeGallery);
 
-  return {
-    openGallery: openGallery,
-    closeGallery: closeGallery
-  };
+  return openGallery;
 })();
