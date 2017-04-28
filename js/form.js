@@ -58,19 +58,17 @@ window.form = (function () {
   };
 
   // Переключаем фильтр
-  var setFilter = function (evt) {
+  var setFilter = function (filter) {
     // Применение фильтра
-    if (evt.target.checked) {
-      uploadImagePreview.className = 'filter-image-preview filter-' + evt.target.value;
-      currentFilter = evt.target.value;
-      if (uploadImagePreview.classList.contains('filter-none')) {
-        window.util.hideElement(uploadFilterLevel);
-      } else {
-        // Сброс насыщенности фильтра
-        window.util.clearStyleField(uploadImagePreview);
-        setDefaultSeturation();
-        window.util.showElement(uploadFilterLevel);
-      }
+    if (filter === 'none') {
+      window.util.hideElement(uploadFilterLevel);
+    } else {
+      currentFilter = filter;
+      uploadImagePreview.className = 'filter-image-preview filter-' + currentFilter;
+      // Сброс насыщенности фильтра
+      window.util.clearStyleField(uploadImagePreview);
+      setDefaultSeturation();
+      window.util.showElement(uploadFilterLevel);
     }
   };
 
@@ -156,6 +154,8 @@ window.form = (function () {
 
   var scaleModul = window.initializeScale(scaleSetting, setScale);
 
+  var filterModul = window.initializeFilters(uploadFilterControls, setFilter);
+
   // Открытие окна добавления и редактирования фото
   var openUpload = function () {
     // Скрываем форму загрузки фото
@@ -179,7 +179,7 @@ window.form = (function () {
     // Добавляем события для кнопок изменения масштаба
     scaleModul.onClickElem();
     // Переключаем фильтры
-    window.util.onClick(uploadFilterControls, setFilter);
+    filterModul.onClickElem();
     // Событие при изменении насыщенности фильтра
     window.util.onMouseDown(uploadFilterLevelPin, onFilterPinMouseDown);
   };
@@ -194,7 +194,7 @@ window.form = (function () {
     window.util.offSubmit(uploadOverlayForm, uploadCloseWindow);
     window.util.offClick(uploadSubmit, uploadCloseSubmit);
     scaleModul.offClickElem();
-    window.util.offClick(uploadFilterControls, setFilter);
+    filterModul.offClickElem();
     window.util.offMouseDown(uploadFilterLevelPin, onFilterPinMouseDown);
     // Закрываем окно
     window.util.hideElement(uploadOverlay);
