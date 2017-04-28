@@ -32,28 +32,6 @@ window.form = (function () {
   // Текущий фильтр
   var currentFilter;
 
-  // Обработчик клика на кнопку изменения размера картинки в меньшую сторону
-  function onUploadScaleMinus() {
-    setScale(getValueScale('minus'));
-  }
-
-  // Обработчик клика на кнопку изменения размера картинки в большую сторону
-  function onUploadScalePlus() {
-    setScale(getValueScale('plus'));
-  }
-
-  // Вычисление размера изображения в форме кадрирования
-  function getValueScale(flag) {
-    var size = parseInt(uploadScaleControl.value, 10);
-
-    if (SCALE_MIN < size && flag === 'minus') {
-      size -= SCALE_STEP;
-    } else if (SCALE_MAX > size && flag === 'plus') {
-      size += SCALE_STEP;
-    }
-
-    return size;
-  }
 
   function setScale(size) {
     uploadScaleControl.setAttribute('value', size + '%');
@@ -80,19 +58,17 @@ window.form = (function () {
   };
 
   // Переключаем фильтр
-  var setFilter = function (evt) {
+  var setFilter = function (filter) {
     // Применение фильтра
-    if (evt.target.checked) {
-      uploadImagePreview.className = 'filter-image-preview filter-' + evt.target.value;
-      currentFilter = evt.target.value;
-      if (uploadImagePreview.classList.contains('filter-none')) {
-        window.util.hideElement(uploadFilterLevel);
-      } else {
-        // Сброс насыщенности фильтра
-        window.util.clearStyleField(uploadImagePreview);
-        setDefaultSeturation();
-        window.util.showElement(uploadFilterLevel);
-      }
+    if (filter === 'none') {
+      window.util.hideElement(uploadFilterLevel);
+    } else {
+      currentFilter = filter;
+      uploadImagePreview.className = 'filter-image-preview filter-' + currentFilter;
+      // Сброс насыщенности фильтра
+      window.util.clearStyleField(uploadImagePreview);
+      setDefaultSeturation();
+      window.util.showElement(uploadFilterLevel);
     }
   };
 
@@ -167,6 +143,19 @@ window.form = (function () {
     window.util.onMouseUp(document, MouseUp);
   };
 
+  var scaleSetting = {
+    elMin: uploadScaleMinus,
+    elPlus: uploadScalePlus,
+    elValue: uploadScaleControl,
+    min: SCALE_MIN,
+    max: SCALE_MAX,
+    step: SCALE_STEP
+  };
+
+  var scaleModul = window.initializeScale(scaleSetting, setScale);
+
+  var filterModul = window.initializeFilters(uploadFilterControls, setFilter);
+
   // Открытие окна добавления и редактирования фото
   var openUpload = function () {
     // Скрываем форму загрузки фото
@@ -188,10 +177,9 @@ window.form = (function () {
     window.util.onSubmit(uploadOverlayForm, uploadCloseWindow);
     window.util.onClick(uploadSubmit, uploadCloseSubmit);
     // Добавляем события для кнопок изменения масштаба
-    window.util.onClick(uploadScaleMinus, onUploadScaleMinus);
-    window.util.onClick(uploadScalePlus, onUploadScalePlus);
+    scaleModul.onClickElem();
     // Переключаем фильтры
-    window.util.onClick(uploadFilterControls, setFilter);
+    filterModul.onClickElem();
     // Событие при изменении насыщенности фильтра
     window.util.onMouseDown(uploadFilterLevelPin, onFilterPinMouseDown);
   };
@@ -205,9 +193,8 @@ window.form = (function () {
     window.util.offClick(uploadCancel, uploadCloseWindow);
     window.util.offSubmit(uploadOverlayForm, uploadCloseWindow);
     window.util.offClick(uploadSubmit, uploadCloseSubmit);
-    window.util.offClick(uploadScaleMinus, onUploadScaleMinus);
-    window.util.offClick(uploadScalePlus, onUploadScalePlus);
-    window.util.offClick(uploadFilterControls, setFilter);
+    scaleModul.offClickElem();
+    filterModul.offClickElem();
     window.util.offMouseDown(uploadFilterLevelPin, onFilterPinMouseDown);
     // Закрываем окно
     window.util.hideElement(uploadOverlay);
