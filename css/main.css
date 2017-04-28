@@ -366,7 +366,7 @@ input[type=radio]:checked + .upload-filter-label .upload-filter-preview {
   height: 18px;
 
   position: absolute;
-  left: 20%;
+  left: 100%;
   top: 50%;
 
   margin: -9px 0 0;
@@ -375,10 +375,11 @@ input[type=radio]:checked + .upload-filter-label .upload-filter-preview {
   border-radius: 50%;
   transform: translateX(-50%);
   cursor: move;
+  z-index: 10;
 }
 
 .upload-filter-level-val {
-  width: 20%;
+  width: 100%;
   height: 100%;
 
   position: absolute;
