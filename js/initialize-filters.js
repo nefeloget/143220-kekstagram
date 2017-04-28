@@ -9,7 +9,9 @@ window.initializeFilters = (function (el, cb) {
   };
 
   var onClickElem = function () {
-    window.util.onClick(el, onSet);
+    window.util.debounce(function () {
+      window.util.onClick(el, onSet);
+    }, window.util.DEBOUNCE_INTERVAL);
   };
 
   var offClickElem = function () {
