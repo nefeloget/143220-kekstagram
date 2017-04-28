@@ -6,6 +6,8 @@ window.gallery = (function () {
   var container = document.querySelector('.pictures');
   var fragment = document.createDocumentFragment();
   var galleryOverlay = document.querySelector('.gallery-overlay');
+  var filterPictures = document.querySelector('.filters');
+  var pictures;
 
   // Создаем картинки по шаблону
   var addPicturesContent = function (element) {
@@ -31,8 +33,40 @@ window.gallery = (function () {
     container.appendChild(fragment);
   };
 
+  var setFilterPictures = function (filter) {
+    var photos = pictures.slice(0);
+    removePictures(container);
+    switch (filter) {
+      case 'popular':
+        addPicturesOnPage(photos);
+        break;
+      case 'new':
+        photos = photos.sort(function (first, second) {
+          return 0.5 - Math.random();
+        }).slice(10);
+        addPicturesOnPage(photos);
+        break;
+      case 'discussed':
+        photos = photos.slice(0).sort(function (first, second) {
+          return second.comments.length - first.comments.length;
+        });
+        addPicturesOnPage(photos);
+    }
+  };
+
+  var removePictures = function (containerPic) {
+    while (containerPic.firstChild) {
+      containerPic.removeChild(containerPic.firstChild);
+    }
+  };
+
+  var filterModul = window.initializeFilters(filterPictures, setFilterPictures);
+
   var onLoad = function (data) {
+    pictures = data;
     addPicturesOnPage(data);
+    window.util.showElement(filterPictures, true);
+    filterModul.onClickElem();
   };
 
   window.load(URL_DATA, onLoad);

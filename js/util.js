@@ -4,6 +4,9 @@ window.util = (function () {
   // Константы
   var KEY_CODE_ENTER = 13;// Числовой код клавиши ENTER
   var KEY_CODE_ESC = 27;  // Числовой код клавиши ESC
+  var DEBOUNCE_INTERVAL = 500; // Интервал повторного запуска функции
+
+  var lastTimeout;
 
   // Получение случайного значения из диапазона
   var getRandomValue = function (maxValue, minValue) {
@@ -26,8 +29,12 @@ window.util = (function () {
   };
 
   // Показать блок
-  var showElement = function (block) {
-    block.classList.remove('invisible');
+  var showElement = function (block, hidden) {
+    if (hidden) {
+      block.classList.remove('hidden');
+    } else {
+      block.classList.remove('invisible');
+    }
   };
 
   // Скрыть блок
@@ -118,6 +125,14 @@ window.util = (function () {
     el.removeEventListener('mousemove', handler);
   };
 
+  // Устранить «дребегз» функции
+  var debounce = function (func, interval) {
+    if (lastTimeout) {
+      window.clearTimeout(lastTimeout);
+    }
+    lastTimeout = window.setTimeout(func, interval);
+  };
+
   return {
     getRandomValue: getRandomValue,
     findValue: findValue,
@@ -141,7 +156,9 @@ window.util = (function () {
     onMouseUp: onMouseUp,
     offMouseUp: offMouseUp,
     onMouseMove: onMouseMove,
-    offMouseMove: offMouseMove
+    offMouseMove: offMouseMove,
+    debounce: debounce,
+    DEBOUNCE_INTERVAL: DEBOUNCE_INTERVAL
   };
 
 })();
