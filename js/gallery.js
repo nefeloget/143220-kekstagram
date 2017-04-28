@@ -47,8 +47,8 @@ window.gallery = (function () {
         addPicturesOnPage(photos);
         break;
       case 'discussed':
-        photos = photos.slice(0).sort(function (a, b) {
-          return b.comments.length - a.comments.length;
+        photos = photos.slice(0).sort(function (first, second) {
+          return second.comments.length - first.comments.length;
         });
         addPicturesOnPage(photos);
     }
