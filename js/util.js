@@ -92,6 +92,32 @@ window.util = (function () {
     el.removeEventListener('submit', handler);
   };
 
+  // Кнопка мыши нажата над элементом
+  var onMouseDown = function (el, handler) {
+    el.addEventListener('mousedown', handler);
+  };
+  var offMouseDown = function (el, handler) {
+    el.removeEventListener('mousedown', handler);
+  };
+
+
+  // Кнопка мыши отпущена над элементом
+  var onMouseUp = function (el, handler) {
+    el.addEventListener('mouseup', handler);
+  };
+  var offMouseUp = function (el, handler) {
+    el.removeEventListener('mouseup', handler);
+  };
+
+
+  // Мышь появилась над элементом
+  var onMouseMove = function (el, handler) {
+    el.addEventListener('mousemove', handler);
+  };
+  var offMouseMove = function (el, handler) {
+    el.removeEventListener('mousemove', handler);
+  };
+
   return {
     getRandomValue: getRandomValue,
     findValue: findValue,
@@ -109,7 +135,13 @@ window.util = (function () {
     onClick: onClick,
     offClick: offClick,
     onSubmit: onSubmit,
-    offSubmit: offSubmit
+    offSubmit: offSubmit,
+    onMouseDown: onMouseDown,
+    offMouseDown: offMouseDown,
+    onMouseUp: onMouseUp,
+    offMouseUp: offMouseUp,
+    onMouseMove: onMouseMove,
+    offMouseMove: offMouseMove
   };
 
 })();
