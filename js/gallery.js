@@ -1,6 +1,7 @@
 'use strict';
 
 window.gallery = (function () {
+  var URL_DATA = 'https://intensive-javascript-server-kjgvxfepjl.now.sh/kekstagram/data';
   var template = document.querySelector('#picture-template').content;
   var container = document.querySelector('.pictures');
   var fragment = document.createDocumentFragment();
@@ -30,6 +31,10 @@ window.gallery = (function () {
     container.appendChild(fragment);
   };
 
-  addPicturesOnPage(window.data);
+  var onLoad = function (data) {
+    addPicturesOnPage(data);
+  };
+
+  window.load(URL_DATA, onLoad);
 
 })();
