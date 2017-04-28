@@ -1,12 +1,11 @@
 'use strict';
 
-window.form = (function () {
+(function () {
   // Константы для логики изменения размера изображения
   var SCALE_MIN = 25;           // Минимальный масштаб (%)
   var SCALE_MAX = 100;          // Макcимальный масштаб (%)
   var SCALE_STEP = 25;          // Шаг (%)
   var SCALE_DEFAULT_VALUE = 100;// Значение по умолчанию (%)
-
   var uploadOverlay = document.querySelector('.upload-overlay');
   var uploadForm = document.getElementById('upload-select-image');
   var uploadCancel = uploadOverlay.querySelector('#upload-cancel');
@@ -67,6 +66,7 @@ window.form = (function () {
       uploadImagePreview.className = 'filter-image-preview filter-' + currentFilter;
       // Сброс насыщенности фильтра
       window.util.clearStyleField(uploadImagePreview);
+      scaleModul.clearElValue();
       setDefaultSeturation();
       window.util.showElement(uploadFilterLevel);
     }
@@ -164,7 +164,6 @@ window.form = (function () {
     window.util.hideElement(uploadFilterLevel);
     // Показываем окно добавления и редактирования фото
     window.util.showElement(uploadOverlay);
-
     // Добавляем событие для закрытия окна по нажатию ESC
     window.util.onKeyDown(document, uploadCloseESC);
     // Закрываем окно по нажатию ENTER на крестике
@@ -201,7 +200,6 @@ window.form = (function () {
     // Сбрасываем форму загрузки и показываем её
     uploadForm.reset();
     window.util.showElement(uploadForm);
-
     // Устанавливаем значения по умолчанию
     setDefaultUpload(SCALE_DEFAULT_VALUE);
     window.util.removeFormInvalid(uploadOverlayForm);
@@ -215,10 +213,7 @@ window.form = (function () {
   var uploadCloseWindow = window.util.onPrevent(closeUpload);
   var uploadCloseSubmit = window.util.onPrevent(onUploadSubmit);
 
-  // ----------------------------------------------------
-
   // Когда фотка загружена открываем окно редактирования фото
   inputUploadFile.addEventListener('change', openUpload);
-
 
 })();
