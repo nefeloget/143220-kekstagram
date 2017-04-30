@@ -13,11 +13,16 @@ window.initializeScale = (function (setting, cb) {
 
   var onElMinus = function (evt) {
     evt.preventDefault();
+
     var currentValue = parseInt(setting.elValue.value, 10);
     if (currentValue !== setting.min) {
       currentValue -= setting.step;
     }
     cb(currentValue);
+  };
+
+  var clearElValue = function () {
+    setting.elValue.setAttribute('value', '100%');
   };
 
   var onClickElem = function () {
@@ -32,7 +37,8 @@ window.initializeScale = (function (setting, cb) {
 
   return {
     onClickElem: onClickElem,
-    offClickElem: offClickElem
+    offClickElem: offClickElem,
+    clearElValue: clearElValue
   };
 
 });

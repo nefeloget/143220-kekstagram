@@ -1,6 +1,6 @@
 'use strict';
 
-window.gallery = (function () {
+(function () {
   var URL_DATA = 'https://intensive-javascript-server-kjgvxfepjl.now.sh/kekstagram/data';
   var template = document.querySelector('#picture-template').content;
   var container = document.querySelector('.pictures');
