@@ -106,6 +106,33 @@ window.util = (function () {
       el.removeEventListener('mousemove', handler);
     },
 
+    // Получаем массив со случайными элементами без повторов
+    getRandomArray: function (array, countElement) {
+      // Защита от «дурака»
+      if (array.length < countElement) {
+        return array;
+      }
+
+      // Временный массив для случайных элементов
+      var tempArray = [];
+      // Случайное число
+      var randomValue;
+
+      while (tempArray.length < countElement) {
+        // Получаем случайное число
+        randomValue = Math.round(Math.random() * countElement);
+        // Проверим, есть оно у нас или нет
+        if (tempArray.indexOf(randomValue) === -1) {
+          // Записываем в массив т.к нету, но есть в исходном
+          tempArray.push(array[randomValue]);
+          // Удаляем из исходного массива элемент, чтобы не было повтора в будущем
+          array.splice(randomValue, 1);
+        }
+      }
+
+      return tempArray;
+    },
+
     /* Устранить «дребегз» функции */
     debounce: function () {
       var lastTimeout = null;

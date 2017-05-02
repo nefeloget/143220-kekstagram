@@ -1,8 +1,8 @@
 'use strict';
 
-(function () {
-  window.initializeScale = (function (setting, cb) {
+window.initializeScale = (function () {
 
+  return function (setting, cb) {
     var onElPlus = function (evt) {
       evt.preventDefault();
       var currentValue = parseInt(setting.elValue.value, 10);
@@ -36,5 +36,5 @@
       offClickElem: offClickElem
     };
 
-  });
+  };
 })();

@@ -1,8 +1,8 @@
 'use strict';
 
-(function () {
-  window.initializeFilters = (function (el, cb) {
+window.initializeFilters = (function () {
 
+  return function (el, cb) {
     var debounce = window.util.debounce();
 
     var onSet = function (evt) {
@@ -26,5 +26,5 @@
       offClickElem: offClickElem
     };
 
-  });
+  };
 })();

@@ -1,7 +1,7 @@
 'use strict';
 
-(function () {
-  window.load = (function (url, onLoad) {
+window.load = (function () {
+  return function (url, onLoad) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
     xhr.timeout = 10000;
@@ -25,5 +25,5 @@
     xhr.open('GET', url);
     xhr.send();
 
-  });
+  };
 })();

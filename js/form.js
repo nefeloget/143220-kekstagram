@@ -76,22 +76,33 @@
 
   // Изменение насыщенности в зависимости от фильтра
   var setFilterSaturation = function (percent) {
+    // Коэффициент для фильтра
+    var ratio;
     var styleFilter = '';
     switch (currentFilter) {
       case 'chrome':
+        // Значение от 0 до 1
         styleFilter = 'grayscale(' + (percent / 100) + ')';
         break;
       case 'sepia':
+        // Значение от 0 до 1
         styleFilter = 'sepia(' + (percent / 100) + ')';
         break;
       case 'marvin':
+        // Значение от 0 до 100%
         styleFilter = 'invert(' + percent + '%)';
         break;
       case 'phobos':
-        styleFilter = 'blur(' + (percent * 3 / 100) + 'px)';
+        ratio = 3;
+        // Значение от 0 до 3px
+        styleFilter = 'blur(' + (percent * ratio / 100) + 'px)';
         break;
       case 'heat':
-        styleFilter = 'brightness(' + (percent * 2 / 100 + 1) + ')';
+        ratio = 2;
+        // Минимально возможное значение для фильтра
+        var minValueFilter = 1;
+        // Значение от 1 до 3
+        styleFilter = 'brightness(' + (percent * ratio / 100 + minValueFilter) + ')';
         break;
     }
     uploadImagePreview.style.filter = styleFilter;

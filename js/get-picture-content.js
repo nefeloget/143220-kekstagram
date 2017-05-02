@@ -1,6 +1,6 @@
 'use strict';
 
-window.pictureContent = (function () {
+window.getPictureContent = (function () {
 
   // Добавляем данные для картинки в контейнер
   return function (container, element, commentsSelector, likesSelector) {

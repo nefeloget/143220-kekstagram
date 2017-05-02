@@ -15,7 +15,7 @@
   // Создаем картинки по шаблону
   var addPicturesContent = function (element) {
     var pictureEl = template.cloneNode(true);
-    window.pictureContent(pictureEl, element, '.picture-comments', '.picture-likes');
+    window.getPictureContent(pictureEl, element, '.picture-comments', '.picture-likes');
 
     // Добавляем событие для открытия галереи
     pictureEl.querySelector('.picture').addEventListener('click', function (evt) {
@@ -46,9 +46,7 @@
         addPicturesOnPage(photos);
         break;
       case 'new':
-        photos = photos.sort(function (first, second) {
-          return 0.5 - Math.random();
-        }).slice(0, 10);
+        photos = window.util.getRandomArray(photos, 10);
         addPicturesOnPage(photos);
         break;
       case 'discussed':
