@@ -1,164 +1,122 @@
 'use strict';
 
 window.util = (function () {
-  // Константы
-  var KEY_CODE_ENTER = 13;// Числовой код клавиши ENTER
-  var KEY_CODE_ESC = 27;  // Числовой код клавиши ESC
-  var DEBOUNCE_INTERVAL = 500; // Интервал повторного запуска функции
-
-  var lastTimeout;
-
-  // Получение случайного значения из диапазона
-  var getRandomValue = function (maxValue, minValue) {
-    if (!minValue) {
-      minValue = 0;
-    }
-    return Math.round(Math.random() * (maxValue - minValue) + minValue);
-  };
-
-  // Проверка на cуществование значения в массиве
-  var findValue = function (array, value) {
-    if (array.length > 0) {
-      for (var i = 0, length = array.length; i < length; i++) {
-        if (array[i] === value) {
-          return true;
-        }
-      }
-    }
-    return false;
-  };
-
-  // Показать блок
-  var showElement = function (block, hidden) {
-    if (hidden) {
-      block.classList.remove('hidden');
-    } else {
-      block.classList.remove('invisible');
-    }
-  };
-
-  // Скрыть блок
-  var hideElement = function (block) {
-    block.classList.add('invisible');
-  };
-
-  // Нажатие клавиш
-  var onKeyPress = function (keyCode, callback) {
-    return function (evt) {
-      if (evt.keyCode === keyCode) {
-        callback(evt);
-      }
-    };
-  };
-
-  var addFormInvalid = function (form) {
-    form.classList.add('form-invalid');
-  };
-
-  var removeFormInvalid = function (form) {
-    form.classList.remove('form-invalid');
-  };
-
-  // Сброс действия по умолчанию
-  var onPrevent = function (callback) {
-    return function (evt) {
-      evt.preventDefault();
-      callback(evt);
-    };
-  };
-
-  // Сброс внешнего вида блока
-  var clearStyleField = function (el) {
-    el.setAttribute('style', '');
-  };
-
-  // Добавляем событие нажатия клавиши
-  var onKeyDown = function (el, handler) {
-    el.addEventListener('keydown', handler);
-  };
-  // Удаляем событие нажатия клавиши
-  var offKeyDown = function (el, handler) {
-    el.removeEventListener('keydown', handler);
-  };
-
-  // Добавляем событие click
-  var onClick = function (el, handler) {
-    el.addEventListener('click', handler);
-  };
-  // Удаляем событие click
-  var offClick = function (el, handler) {
-    el.removeEventListener('click', handler);
-  };
-
-  // Добавляем событие Submit
-  var onSubmit = function (el, handler) {
-    el.addEventListener('submit', handler);
-  };
-  // Удаляем событие Submit
-  var offSubmit = function (el, handler) {
-    el.removeEventListener('submit', handler);
-  };
-
-  // Кнопка мыши нажата над элементом
-  var onMouseDown = function (el, handler) {
-    el.addEventListener('mousedown', handler);
-  };
-  var offMouseDown = function (el, handler) {
-    el.removeEventListener('mousedown', handler);
-  };
-
-
-  // Кнопка мыши отпущена над элементом
-  var onMouseUp = function (el, handler) {
-    el.addEventListener('mouseup', handler);
-  };
-  var offMouseUp = function (el, handler) {
-    el.removeEventListener('mouseup', handler);
-  };
-
-
-  // Мышь появилась над элементом
-  var onMouseMove = function (el, handler) {
-    el.addEventListener('mousemove', handler);
-  };
-  var offMouseMove = function (el, handler) {
-    el.removeEventListener('mousemove', handler);
-  };
-
-  // Устранить «дребегз» функции
-  var debounce = function (func, interval) {
-    if (lastTimeout) {
-      window.clearTimeout(lastTimeout);
-    }
-    lastTimeout = window.setTimeout(func, interval);
-  };
 
   return {
-    getRandomValue: getRandomValue,
-    findValue: findValue,
-    showElement: showElement,
-    hideElement: hideElement,
-    onKeyPress: onKeyPress,
-    KEY_CODE_ENTER: KEY_CODE_ENTER,
-    KEY_CODE_ESC: KEY_CODE_ESC,
-    addFormInvalid: addFormInvalid,
-    removeFormInvalid: removeFormInvalid,
-    onPrevent: onPrevent,
-    clearStyleField: clearStyleField,
-    onKeyDown: onKeyDown,
-    offKeyDown: offKeyDown,
-    onClick: onClick,
-    offClick: offClick,
-    onSubmit: onSubmit,
-    offSubmit: offSubmit,
-    onMouseDown: onMouseDown,
-    offMouseDown: offMouseDown,
-    onMouseUp: onMouseUp,
-    offMouseUp: offMouseUp,
-    onMouseMove: onMouseMove,
-    offMouseMove: offMouseMove,
-    debounce: debounce,
-    DEBOUNCE_INTERVAL: DEBOUNCE_INTERVAL
+
+    /* Числовой код клавиши ENTER */
+    KEY_CODE_ENTER: 13,
+
+    /* Числовой код клавиши ESC */
+    KEY_CODE_ESC: 27,
+    /* Интервал повторного запуска функции */
+    DEBOUNCE_INTERVAL: 500,
+
+    /* Показать блок */
+    showElement: function (block) {
+      block.classList.remove('invisible');
+    },
+
+    showElementHidden: function (block) {
+      block.classList.remove('hidden');
+    },
+
+    /* Скрыть блок */
+    hideElement: function (block) {
+      block.classList.add('invisible');
+    },
+
+    /* Нажатие клавиш */
+    onKeyPress: function (keyCode, callback) {
+      return function (evt) {
+        if (evt.keyCode === keyCode) {
+          callback(evt);
+        }
+      };
+    },
+
+    /* Класс невалидной формы */
+    addFormInvalid: function (form) {
+      form.classList.add('form-invalid');
+    },
+    removeFormInvalid: function (form) {
+      form.classList.remove('form-invalid');
+    },
+
+    /* Сброс действия по умолчанию */
+    onPrevent: function (callback) {
+      return function (evt) {
+        evt.preventDefault();
+        callback(evt);
+      };
+    },
+
+    /* Сброс внешнего вида блока */
+    clearStyleField: function (el) {
+      el.setAttribute('style', '');
+    },
+
+    /* Добавляем событие нажатия клавиши */
+    onKeyDown: function (el, handler) {
+      el.addEventListener('keydown', handler);
+    },
+
+    /* Удаляем событие нажатия клавиши */
+    offKeyDown: function (el, handler) {
+      el.removeEventListener('keydown', handler);
+    },
+
+    /* Добавляем событие click */
+    onClick: function (el, handler) {
+      el.addEventListener('click', handler);
+    },
+    offClick: function (el, handler) {
+      el.removeEventListener('click', handler);
+    },
+
+    /* Добавляем событие Submit */
+    onSubmit: function (el, handler) {
+      el.addEventListener('submit', handler);
+    },
+    offSubmit: function (el, handler) {
+      el.removeEventListener('submit', handler);
+    },
+
+    /* Кнопка мыши нажата над элементом */
+    onMouseDown: function (el, handler) {
+      el.addEventListener('mousedown', handler);
+    },
+    offMouseDown: function (el, handler) {
+      el.removeEventListener('mousedown', handler);
+    },
+
+    /* Кнопка мыши отпущена над элементом */
+    onMouseUp: function (el, handler) {
+      el.addEventListener('mouseup', handler);
+    },
+    offMouseUp: function (el, handler) {
+      el.removeEventListener('mouseup', handler);
+    },
+
+    /* Мышь появилась над элементом */
+    onMouseMove: function (el, handler) {
+      el.addEventListener('mousemove', handler);
+    },
+    offMouseMove: function (el, handler) {
+      el.removeEventListener('mousemove', handler);
+    },
+
+    /* Устранить «дребегз» функции */
+    debounce: function () {
+      var lastTimeout = null;
+      return function (cb, interval) {
+        if (lastTimeout) {
+          window.clearTimeout(lastTimeout);
+        }
+        lastTimeout = window.setTimeout(cb, interval);
+      };
+    }
+
   };
 
 })();

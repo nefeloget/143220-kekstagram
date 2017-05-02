@@ -817,3 +817,28 @@ input[type=radio]:checked + .upload-filter-label .upload-filter-preview {
   border: 1px solid red;
   outline: 0;
 }
+
+.error-overlay {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  margin: 0 auto;
+  text-align: center;
+  background-color: red;
+  color: #ffffff;
+  font-size: 32px;
+  z-index: 100;
+}
+.error-overlay-close {
+  display: block;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin-right: 10px;
+  border: 0;
+  background: transparent url(../img/icon-cross.png) center no-repeat;
+}

@@ -1,37 +1,42 @@
 'use strict';
 
 window.errors = (function () {
+  var errorOverlay = document.querySelector('.error-overlay');
+  var errorClose = document.getElementById('error-close');
+  var errorText = errorOverlay.querySelector('.error-text');
 
-  var onError = function (errorMessage) {
-    var node = document.createElement('div');
-    node.style = 'z-index: 100; margin: 0 auto; text-align: center; background-color: red;';
-    node.style.position = 'absolute';
-    node.style.left = 0;
-    node.style.right = 0;
-    node.style.fontSize = '30px';
-    node.style.color = '#ffffff';
-
-    node.textContent = errorMessage;
-    document.body.insertAdjacentElement('afterbegin', node);
+  var onCloseError = function () {
+    window.util.offKeyDown(document, onErrorCloseESC);
+    window.util.offKeyDown(errorClose, onErrorCloseENTER);
+    window.util.offClick(errorClose, onErrorCloseClick);
+    window.util.hideElement(errorOverlay);
   };
 
-  var onStatus = function (status) {
-    var error;
-    switch (status) {
-      case 400:
-        error = 'Неверный запрос';
-        break;
-      case 401:
-        error = 'Пользователь не авторизован';
-        break;
-      case 404:
-        error = 'Ничего не найдено';
-        break;
+  var onErrorCloseESC = window.util.onKeyPress(window.util.KEY_CODE_ESC, onCloseError);
+  var onErrorCloseENTER = window.util.onKeyPress(window.util.KEY_CODE_ENTER, onCloseError);
+  var onErrorCloseClick = window.util.onPrevent(onCloseError);
 
-      default:
-        error = 'Неизвестный статус: ' + status;
-    }
-    onError(error);
+  var onError = function (errorMessage) {
+    errorText.textContent = errorMessage;
+    window.util.showElement(errorOverlay);
+    window.util.onKeyDown(document, onErrorCloseESC);
+    window.util.onKeyDown(errorClose, onErrorCloseENTER);
+    window.util.onClick(errorClose, onErrorCloseClick);
+  };
+
+  var ERROR_CODES = {
+    400: 'Неверный запрос',
+    401: 'Пользователь не авторизован',
+    403: 'Доступ запрещён',
+    404: 'Ничего не найдено',
+    500: 'Внутренняя ошибка сервера',
+    502: 'Ошибочный шлюз',
+    503: 'Сервис недоступен',
+    504: 'Сервер не отвечает'
+  };
+
+  var onStatus = function (status, statusText) {
+    onError(ERROR_CODES[status] || ('Неизвестный статус: ' + status + ' ' + statusText));
   };
 
   return {

@@ -6,19 +6,24 @@
   var container = document.querySelector('.pictures');
   var fragment = document.createDocumentFragment();
   var galleryOverlay = document.querySelector('.gallery-overlay');
+  var galleryOverlayImg = galleryOverlay.querySelector('img');
+  var galleryOverlayComments = galleryOverlay.querySelector('.comments-count');
+  var galleryOverlayLikes = galleryOverlay.querySelector('.likes-count');
   var filterPictures = document.querySelector('.filters');
   var pictures;
 
   // Создаем картинки по шаблону
   var addPicturesContent = function (element) {
     var pictureEl = template.cloneNode(true);
-    window.picture(pictureEl, element, '.picture-comments', '.picture-likes');
+    window.pictureContent(pictureEl, element, '.picture-comments', '.picture-likes');
 
     // Добавляем событие для открытия галереи
     pictureEl.querySelector('.picture').addEventListener('click', function (evt) {
       evt.preventDefault();
-      window.preview(element, function () {
-        window.picture(galleryOverlay, element, '.comments-count', '.likes-count');
+      window.openGallery(element, function () {
+        galleryOverlayImg.setAttribute('src', element.url);
+        galleryOverlayComments.textContent = element.comments.length;
+        galleryOverlayLikes.textContent = element.likes;
       });
     });
 
@@ -43,21 +48,20 @@
       case 'new':
         photos = photos.sort(function (first, second) {
           return 0.5 - Math.random();
-        }).slice(10);
+        }).slice(0, 10);
         addPicturesOnPage(photos);
         break;
       case 'discussed':
-        photos = photos.slice(0).sort(function (first, second) {
+        photos = photos.sort(function (first, second) {
           return second.comments.length - first.comments.length;
         });
         addPicturesOnPage(photos);
     }
+
   };
 
   var removePictures = function (containerPic) {
-    while (containerPic.firstChild) {
-      containerPic.removeChild(containerPic.firstChild);
-    }
+    containerPic.innerHTML = '';
   };
 
   var filterModul = window.initializeFilters(filterPictures, setFilterPictures);
@@ -65,7 +69,7 @@
   var onLoad = function (data) {
     pictures = data;
     addPicturesOnPage(data);
-    window.util.showElement(filterPictures, true);
+    window.util.showElementHidden(filterPictures);
     filterModul.onClickElem();
   };
 

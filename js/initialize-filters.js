@@ -1,26 +1,30 @@
 'use strict';
 
-window.initializeFilters = (function (el, cb) {
+(function () {
+  window.initializeFilters = (function (el, cb) {
 
-  var onSet = function (evt) {
-    window.util.debounce(function () {
-      if (evt.target.checked) {
-        cb(evt.target.value);
-      }
-    }, window.util.DEBOUNCE_INTERVAL);
-  };
+    var debounce = window.util.debounce();
 
-  var onClickElem = function () {
-    window.util.onClick(el, onSet);
-  };
+    var onSet = function (evt) {
+      debounce(function () {
+        if (evt.target.checked) {
+          cb(evt.target.value);
+        }
+      }, window.util.DEBOUNCE_INTERVAL);
+    };
 
-  var offClickElem = function () {
-    window.util.offClick(el, onSet);
-  };
+    var onClickElem = function () {
+      window.util.onClick(el, onSet);
+    };
 
-  return {
-    onClickElem: onClickElem,
-    offClickElem: offClickElem
-  };
+    var offClickElem = function () {
+      window.util.offClick(el, onSet);
+    };
 
-});
+    return {
+      onClickElem: onClickElem,
+      offClickElem: offClickElem
+    };
+
+  });
+})();

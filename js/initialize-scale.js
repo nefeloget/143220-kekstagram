@@ -1,44 +1,40 @@
 'use strict';
 
-window.initializeScale = (function (setting, cb) {
+(function () {
+  window.initializeScale = (function (setting, cb) {
 
-  var onElPlus = function (evt) {
-    evt.preventDefault();
-    var currentValue = parseInt(setting.elValue.value, 10);
-    if (currentValue !== setting.max) {
-      currentValue += setting.step;
-    }
-    cb(currentValue);
-  };
+    var onElPlus = function (evt) {
+      evt.preventDefault();
+      var currentValue = parseInt(setting.elValue.value, 10);
+      if (currentValue !== setting.max) {
+        currentValue += setting.step;
+      }
+      cb(currentValue);
+    };
 
-  var onElMinus = function (evt) {
-    evt.preventDefault();
+    var onElMinus = function (evt) {
+      evt.preventDefault();
+      var currentValue = parseInt(setting.elValue.value, 10);
+      if (currentValue !== setting.min) {
+        currentValue -= setting.step;
+      }
+      cb(currentValue);
+    };
 
-    var currentValue = parseInt(setting.elValue.value, 10);
-    if (currentValue !== setting.min) {
-      currentValue -= setting.step;
-    }
-    cb(currentValue);
-  };
+    var onClickElem = function () {
+      window.util.onClick(setting.elPlus, onElPlus);
+      window.util.onClick(setting.elMin, onElMinus);
+    };
 
-  var clearElValue = function () {
-    setting.elValue.setAttribute('value', '100%');
-  };
+    var offClickElem = function () {
+      window.util.offClick(setting.elPlus, onElPlus);
+      window.util.offClick(setting.elMin, onElMinus);
+    };
 
-  var onClickElem = function () {
-    window.util.onClick(setting.elPlus, onElPlus);
-    window.util.onClick(setting.elMin, onElMinus);
-  };
+    return {
+      onClickElem: onClickElem,
+      offClickElem: offClickElem
+    };
 
-  var offClickElem = function () {
-    window.util.offClick(setting.elPlus, onElPlus);
-    window.util.offClick(setting.elMin, onElMinus);
-  };
-
-  return {
-    onClickElem: onClickElem,
-    offClickElem: offClickElem,
-    clearElValue: clearElValue
-  };
-
-});
+  });
+})();

@@ -30,12 +30,14 @@
   var uploadFilterLevelVal = uploadFilterControls.querySelector('.upload-filter-level-val');
   // Текущий фильтр
   var currentFilter;
+  var movePin;
+  var shiftMoveX;
+  var rightEdge;
 
-
-  function setScale(size) {
+  var setScale = function (size) {
     uploadScaleControl.setAttribute('value', size + '%');
     uploadImagePreview.style.transform = 'scale(' + size / 100 + ')';
-  }
+  };
 
   var setDefaultSeturation = function () {
     uploadFilterLevelVal.style.width = '100%';
@@ -46,7 +48,7 @@
   var setDefaultUpload = function (defaultValue) {
     uploadOverlayForm.reset();
     // Сброс масштаба
-    uploadScaleControl.value = defaultValue + '%';
+    uploadScaleControl.setAttribute('value', defaultValue + '%');
     window.util.clearStyleField(uploadImagePreview);
     // Сброс поля комментария
     uploadComment.value = '';
@@ -58,16 +60,16 @@
 
   // Переключаем фильтр
   var setFilter = function (filter) {
+    uploadImagePreview.style.filter = '';
+    // Сброс насыщенности фильтра
+    setDefaultSeturation();
     // Применение фильтра
+    currentFilter = filter;
+    uploadImagePreview.className = 'filter-image-preview filter-' + currentFilter;
+    // Скрываем ползунок насыщенности, когда нет примененного фильтра
     if (filter === 'none') {
       window.util.hideElement(uploadFilterLevel);
     } else {
-      currentFilter = filter;
-      uploadImagePreview.className = 'filter-image-preview filter-' + currentFilter;
-      // Сброс насыщенности фильтра
-      window.util.clearStyleField(uploadImagePreview);
-      scaleModul.clearElValue();
-      setDefaultSeturation();
       window.util.showElement(uploadFilterLevel);
     }
   };
@@ -96,51 +98,51 @@
   };
 
   var onUploadSubmit = function () {
-    if (uploadOverlayForm.checkValidity() === false) {
-      window.util.addFormInvalid(uploadOverlayForm);
+    if (uploadOverlayForm.checkValidity()) {
+      onCloseUpload();
     } else {
-      closeUpload();
+      window.util.addFormInvalid(uploadOverlayForm);
     }
   };
 
+  /* События перемещения ползунка */
   var onFilterPinMouseDown = function (evt) {
     evt.preventDefault();
-    var movePin = evt.clientX;
+    movePin = evt.clientX;
+    rightEdge = uploadFilterLevelLine.offsetWidth;
 
-    var MouseMove = function (moveEvt) {
-      moveEvt.preventDefault();
-      var shiftMoveX = movePin - moveEvt.clientX;
-      movePin = moveEvt.clientX;
+    window.util.onMouseMove(document, onMouseMovePin);
+    window.util.onMouseUp(document, onMouseUpPin);
+  };
 
-      var leftEdge = 0;
-      var rightEdge = uploadFilterLevelLine.offsetWidth;
-      var handle = evt.target.offsetLeft - shiftMoveX;
+  var onMouseMovePin = function (moveEvt) {
+    moveEvt.preventDefault();
 
-      var level = Math.floor(handle * 100 / rightEdge);
-      evt.target.style.left = handle + 'px';
-      uploadFilterLevelVal.style.width = level + '%';
+    shiftMoveX = movePin - moveEvt.clientX;
+    movePin = moveEvt.clientX;
+    var handle = uploadFilterLevelPin.offsetLeft - shiftMoveX;
+    var level = Math.floor(handle * 100 / rightEdge);
 
-      if (handle < leftEdge) {
-        evt.target.style.left = '0px';
-        uploadFilterLevelVal.style.width = '0%';
-      }
+    uploadFilterLevelPin.style.left = handle + 'px';
+    uploadFilterLevelVal.style.width = level + '%';
 
-      if (handle > rightEdge) {
-        evt.target.style.left = rightEdge + 'px';
-        uploadFilterLevelVal.style.width = '100%';
-      }
+    if (handle < 0) {
+      uploadFilterLevelPin.style.left = '0px';
+      uploadFilterLevelVal.style.width = '0%';
+    }
 
-      setFilterSaturation(level);
-    };
+    if (handle > rightEdge) {
+      uploadFilterLevelPin.style.left = rightEdge + 'px';
+      uploadFilterLevelVal.style.width = '100%';
+    }
 
-    var MouseUp = function (upEvt) {
-      upEvt.preventDefault();
-      window.util.offMouseUp(document, MouseUp);
-      window.util.offMouseMove(document, MouseMove);
-    };
+    setFilterSaturation(level);
+  };
 
-    window.util.onMouseMove(document, MouseMove);
-    window.util.onMouseUp(document, MouseUp);
+  var onMouseUpPin = function (upEvt) {
+    upEvt.preventDefault();
+    window.util.offMouseUp(document, onMouseUpPin);
+    window.util.offMouseMove(document, onMouseMovePin);
   };
 
   var scaleSetting = {
@@ -157,7 +159,7 @@
   var filterModul = window.initializeFilters(uploadFilterControls, setFilter);
 
   // Открытие окна добавления и редактирования фото
-  var openUpload = function () {
+  var onOpenUpload = function () {
     // Скрываем форму загрузки фото
     window.util.hideElement(uploadForm);
     // Скрываем ползунок по умолчанию
@@ -184,7 +186,7 @@
   };
 
   // Закрытие окна добавления фото
-  var closeUpload = function () {
+  var onCloseUpload = function () {
     // Удаляем события
     window.util.offKeyDown(document, uploadCloseESC);
     window.util.offKeyDown(uploadOverlay, uploadCloseENTER);
@@ -205,15 +207,15 @@
     window.util.removeFormInvalid(uploadOverlayForm);
   };
 
-  var uploadCloseESC = window.util.onKeyPress(window.util.KEY_CODE_ESC, closeUpload);
-  var uploadCloseENTER = window.util.onKeyPress(window.util.KEY_CODE_ENTER, closeUpload);
+  var uploadCloseESC = window.util.onKeyPress(window.util.KEY_CODE_ESC, onCloseUpload);
+  var uploadCloseENTER = window.util.onKeyPress(window.util.KEY_CODE_ENTER, onCloseUpload);
   var uploadCommentCloseESC = window.util.onKeyPress(window.util.KEY_CODE_ESC, function (evt) {
     evt.stopPropagation();
   });
-  var uploadCloseWindow = window.util.onPrevent(closeUpload);
+  var uploadCloseWindow = window.util.onPrevent(onCloseUpload);
   var uploadCloseSubmit = window.util.onPrevent(onUploadSubmit);
 
   // Когда фотка загружена открываем окно редактирования фото
-  inputUploadFile.addEventListener('change', openUpload);
+  inputUploadFile.addEventListener('change', onOpenUpload);
 
 })();
